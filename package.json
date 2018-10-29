@@ -1,0 +1,15 @@
+{
+  "name": "dynamo-table",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "aws-sdk": "^2.344.0",
+    "bluebird": "^3.5.2",
+    "documentdb": "^1.14.5",
+    "dotenv": "^6.1.0",
+    "dynamodb": "^1.1.2",
+    "lodash": "^4.17.11",
+    "uuid": "^3.3.2"
+  }
+}
