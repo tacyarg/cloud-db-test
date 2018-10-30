@@ -1,30 +1,79 @@
 require('dotenv').config()
+const faker = require('faker');
+const lodash = require('lodash')
 
-const Driver = require('./dynamo-table')
-const Table = require('./dynamo-table/table')
+// COUCHBASE
+
+const Driver = require('./couchbase-table')
+const Table = require('./couchbase-table/table')
 
 const client = Driver({
-  key: process.env.DYNAMO_KEY,
-  secret: process.env.DYNAMO_SECRET,
-  // endpoint: 'localhost:8000'
+  host: 'couchbase://45.63.66.169/pools',
+  // user: 'admindev',
+  // pass: 'admindev'
+  user: 'tacyarg',
+  pass: 'tacyarg'
+})
+const table = Table(client, {
+  table: 'users'
 })
 
-const table = Table(client, {
-  table: 'users',
-})
+table.list().then(console.log)
 
 async function runTest(table) {
-  // const get = await table.get(upsert.id)
-  // const update = await table.update(get.id, {
-  //   username: 'carl',
-  // })
 
-  const many = await table.getBy('username', 'tacyarg')
-  console.log(many)
+  const upsert = await table.upsert({
+    username: 'tacyarg',
+    email: 'jdent@tacyarg.com'
+  })
 
+  const get = await table.get(upsert.id)
+  const update = await table.update(get.id, {
+    username: 'carl',
+  })
+
+  console.log(upsert, get, update)
 }
 
-runTest(table)
+// runTest(table)
+
+function createUser() {
+  return table.create({
+    username: faker.internet.userName(),
+    email: faker.internet.email()
+  })
+}
+
+async function stress() {
+  const delay = lodash.random(1, 1000)
+  const upsert = await createUser()
+  console.log(delay, upsert)
+  setTimeout(stress, delay)
+}
+
+// start many threads
+// lodash.times(1024, stress)
+
+
+
+
+// DYNAMO_DB
+
+// const Driver = require('./dynamo-table')
+// const Table = require('./dynamo-table/table')
+
+// const client = Driver({
+//   key: process.env.DYNAMO_KEY,
+//   secret: process.env.DYNAMO_SECRET,
+//   // endpoint: 'localhost:8000'
+// })
+
+// const table = Table(client, {
+//   table: 'users',
+// })
+
+
+// COSMOS_DB
 
 // const Driver = require('./cosmos-table')
 // const Table = require('./cosmos-table/table')
