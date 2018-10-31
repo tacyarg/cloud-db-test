@@ -18,7 +18,7 @@ const table = Table(client, {
   table: 'users'
 })
 
-table.list().then(console.log)
+// table.list().then(console.log)
 
 async function runTest(table) {
 
@@ -40,19 +40,25 @@ async function runTest(table) {
 function createUser() {
   return table.create({
     username: faker.internet.userName(),
-    email: faker.internet.email()
+    email: faker.internet.email(),
+    name: faker.name.findName(),
+    department: faker.commerce.department()
   })
 }
 
 async function stress() {
   const delay = lodash.random(1, 1000)
-  const upsert = await createUser()
-  console.log(delay, upsert)
-  setTimeout(stress, delay)
+  try{
+    const upsert = await createUser()
+    console.log(delay, upsert)
+    setTimeout(stress, delay)
+  } catch(e) {
+    stress()
+  }
 }
 
 // start many threads
-// lodash.times(1024, stress)
+lodash.times(2048, stress)
 
 
 
